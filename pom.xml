@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>no.bekk.java</groupId>
+	<artifactId>camel-examples</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<name>camel-examples</name>
+	<packaging>jar</packaging>
+
+	<properties>
+		<camel-version>2.9.0</camel-version>
+		<jetty-version>7.2.2.v20101205</jetty-version>
+		<spring.version>3.0.6.RELEASE</spring.version>
+		<org.slf4j.version>1.6.1</org.slf4j.version>
+		<logback.version>1.0.0</logback.version>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<example.mainClass>no.bekk.java.camelexamples.JettyMain</example.mainClass>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>jetty</id>
+			<properties>
+				<example.mainClass>no.bekk.java.camelexamples.JettyExample</example.mainClass>
+			</properties>
+		</profile>
+		<profile>
+			<id>file</id>
+			<properties>
+				<example.mainClass>no.bekk.java.camelexamples.FileExample</example.mainClass>
+			</properties>
+		</profile>
+		<profile>
+			<id>http</id>
+			<properties>
+				<example.mainClass>no.bekk.java.camelexamples.HttpExample</example.mainClass>
+			</properties>
+		</profile>
+	</profiles>
+
+	<dependencies>
+
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j.version}</version>
+		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.0</version>
+		</dependency>
+
+		<!-- Camel components -->
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-test</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-stream</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-jetty</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-rss</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+
+		<!-- Other -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.1</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<escapeWindowsPaths>false</escapeWindowsPaths>
+					<useDefaultDelimiters>false</useDefaultDelimiters>
+					<delimiters>
+						<delimiter>${*}</delimiter>
+					</delimiters>
+				</configuration>
+				<executions>
+					<execution>
+						<id>copy-test-resources-config</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/test/resources</directory>
+									<filtering>true</filtering>
+									<includes>
+										<include>**/*.properties</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<configuration>
+					<mainClass>${example.mainClass}</mainClass>
+					<includePluginDependencies>true</includePluginDependencies>
+					<environmentVariables>
+						<java.security.egd>file:/dev/./urandom</java.security.egd>
+						<file.encoding>UTF-8</file.encoding>
+					</environmentVariables>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>1.4</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>
